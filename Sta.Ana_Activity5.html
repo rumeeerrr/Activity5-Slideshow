@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * {box-sizing: border-box;}
+body {font-family: Verdana, sans-serif; margin:0; background-color: #f4f4f4;}
+.mySlides {display: none;}
+img {vertical-align: middle; width: 100%; height: auto; border-radius: 10px;}
+
+
+.slideshow-container {
+  max-width: 1000px;
+  position: relative;
+  margin: auto;
+  padding: 20px;
+}
+
+
+.prev, .next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  padding: 12px;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  user-select: none;
+  transition: 0.3s;
+}
+
+.prev { left: 10px; }
+.next { right: 10px; }
+
+.prev:hover, .next:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.text {
+  color: #fff;
+  font-size: 16px;
+  text-align: center;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 5px;
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.dot {
+  cursor: pointer;
+  height: 12px;
+  width: 12px;
+  margin: 5px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  transition: background-color 0.3s ease;
+}
+
+.active, .dot:hover {
+  background-color: #717171;
+}
+    </style>
+</head>
+<body>
+
+<div class="slideshow-container" id="slideshow"></div>
+
+<div style="text-align:center" id="dots"></div>
+
+<a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+<a class="next" onclick="plusSlides(1)">&#10095;</a>
+
+<script>
+    let slideIndex = 1;
+    let slidesData = [];
+
+    function loadXML() {
+        fetch('Sta.Ana_Activity5.xml')
+        .then(response => response.text())
+        .then(str => new window.DOMParser().parseFromString(str, "text/xml"))
+        .then(data => {
+            let slides = data.getElementsByTagName("slide");
+            let container = document.getElementById("slideshow");
+            let dotsContainer = document.getElementById("dots");
+
+            for (let i = 0; i < slides.length; i++) {
+                let imgSrc = slides[i].getElementsByTagName("image")[0].textContent;
+                let text = slides[i].getElementsByTagName("text")[0].textContent;
+
+                slidesData.push({ img: imgSrc, text: text });
+
+                let slideDiv = document.createElement("div");
+                slideDiv.className = "mySlides";
+                slideDiv.innerHTML = `<img src="${imgSrc}"><div class="text">${text}</div>`;
+                container.appendChild(slideDiv);
+
+                let dot = document.createElement("span");
+                dot.className = "dot";
+                dot.setAttribute("onclick", `currentSlide(${i + 1})`);
+                dotsContainer.appendChild(dot);
+            }
+
+            showSlides(slideIndex);
+        })
+        .catch(error => console.error("Error loading XML:", error));
+    }
+
+    function plusSlides(n) {
+        showSlides(slideIndex += n);
+    }
+
+    function currentSlide(n) {
+        showSlides(slideIndex = n);
+    }
+
+    function showSlides(n) {
+        let slides = document.getElementsByClassName("mySlides");
+        let dots = document.getElementsByClassName("dot");
+        if (n > slides.length) {slideIndex = 1}    
+        if (n < 1) {slideIndex = slides.length}
+        for (let i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";  
+        }
+        for (let i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(" active", "");
+        }
+        slides[slideIndex-1].style.display = "block";  
+        dots[slideIndex-1].className += " active";
+    }
+
+    window.onload = loadXML;
+    
+</script>
+
+</body>
+</html>
